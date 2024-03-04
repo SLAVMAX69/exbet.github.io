@@ -1,0 +1,2588 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pharaon Secret Tresure</title>
+  <style>
+        #overlay-container {
+            position: fill;
+            width: 100%;
+            height: 100vh; /* Adjust as needed */
+        }
+
+        /* Style for the overlay image */
+        #overlay-image {
+            position: absolute;
+            top: 50%; /* Adjust to center vertically */
+            left: 50%; /* Adjust to center horizontally */
+            transform: translate(-50%, -50%);
+            max-width: 100%; /* Ensure the image doesn't exceed its container */
+            max-height: 100%;
+            border: 2px solid #fff; /* Optional border for better visibility */
+        }
+
+
+
+    @keyframes symbolDrop {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      25% {
+        transform: translateY(-30%);
+      }
+      50% {
+        transform: translateY(30%);
+      }
+      75% {
+        transform: translateY(-15%);
+      }
+    }
+
+    .symbol {
+      width: 100%;
+      height: 25%;
+      object-fit: contain;
+      position: absolute;
+      animation: symbolDrop 0.5s ease-in-out;
+    }
+
+    .symbol.stopped {
+      animation: none;
+    }
+
+    @font-face {
+      font-family: 'WinFont';
+      src: url('fonts/win.otf') format('truetype');
+    }
+
+    @font-face {
+      font-family: 'WinFont2';
+      src: url('fonts/win2.otf') format('truetype');
+    }
+
+    @font-face {
+      font-family: 'SizzlingHotCherry';
+      src: url('fonts/win2.otf') format('truetype');
+    }
+
+    .reel-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .reel {
+      border: 2px solid #333;
+      border-radius: 10px;
+      overflow: hidden;
+      width: 200px;
+      height: 350px;
+      margin: 0 10px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: url('images/sbg.png') no-repeat center center fixed;
+      background-size: cover;
+      background-color: rgba(255, 255, 255, 0.4);
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: rgb(214, 193, 0);
+    }
+
+    #slot-container {
+      background: url('images/sbg.png') no-repeat center center fixed;
+      background-size: cover;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+
+    h1 {
+      font-family: 'WinFont', Arial, sans-serif;
+    }
+
+    #balance {
+      font-family: 'WinFont2';
+      font-size: 30px;
+      color: rgb(214, 193, 0);
+      margin-bottom: 10px;
+      margin-top: 10px;
+      position: absolute;
+      top: 10px;
+      left: 10px;
+    }
+
+    #last-win-label {
+      font-family: 'WinFont2', Arial, sans-serif;
+      font-size: 18px;
+      color: rgb(214, 193, 0);
+      margin-bottom: 10px;
+      margin-top: 10px;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+
+    #win-amount {
+      font-family: 'Sizzling Hot Cherry',;
+      font-size: 18px;
+      color: rgb(214, 193, 0);
+      display: inline-block;
+      margin-top: 10px;
+    }
+
+    #slot-machine {
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+      margin-top: 20px;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .reel {
+      border: 2px solid #333;
+      border-radius: 10px;
+      overflow: hidden;
+      width: 200px;
+      height: 350px;
+      margin: 0 10px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .symbol {
+      width: 100%;
+      height: 25%;
+      object-fit: contain;
+      position: absolute;
+    }
+
+    .symbol img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    #select-bet {
+      margin-top: 20px;
+      border: 2px solid rgb(214, 193, 0);
+      border-radius: 5px;
+      overflow: hidden;
+      width: 150px;
+      top: 50px;
+      left: 20px;
+    }
+
+
+    select {
+      padding: 10px;
+      font-size: 16px;
+      width: 100%;
+      border: none;
+      margin-right: 10px;
+      background-color: rgb(214, 193, 0);
+      color: #333;
+      cursor: pointer;
+
+    }
+
+    button {
+      background-color: rgb(214, 193, 0);
+      color: #333;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+      margin-top: 0px;
+      margin-left: 0px;
+      background-color: rgb(214, 193, 0);
+      border-radius: 5px;
+      overflow: hidden;
+      width: 150px;
+      top: 50px;
+      left: 20px;
+    }
+    
+  </style>
+</head>
+
+
+<body>
+
+  <img id="info-image" src="images/info.png" alt="Info">
+
+    <audio id="spinSound" src="music/spin.wav"></audio>
+    <audio id="win" src="music/end.wav"></audio>
+    <audio id="bigwin" src="music/big win.wav"></audio>
+    <audio id="backgroundMusic" src="music/bg.wav" loop></audio>
+    <audio id="bonus" src="music/bonus.wav"></audio>
+    
+
+  <div id="slot-container">
+    <h1>Pharaon Secret Tresure</h1>
+    <label id="last-win-label">Last Win: <span id="win-amount">0.00 BGN</span></label>
+
+    <div id="slot-machine" class="reel-container">
+      <div class="reel" id="reel1"></div>
+      <div class="reel" id="reel2"></div>
+      <div class="reel" id="reel3"></div>
+      <div class="reel" id="reel4"></div>
+      <div class="reel" id="reel5"></div>
+    </div>
+
+    <div id="select-bet">
+      <select id="betAmount" onchange="updateBet()">
+        <option value="0.10">Bet 0.10 BGN</option>
+        <option value="0.20">Bet 0.20 BGN</option>
+        <option value="0.50">Bet 0.50 BGN</option>
+        <option value="1.00">Bet 1.00 BGN</option>
+        <option value="1.50">Bet 1.50 BGN</option>
+        <option value="2.00">Bet 2.00 BGN</option>
+        <option value="2.50">Bet 2.50 BGN</option>
+        <option value="5.00">Bet 5.00 BGN</option>
+        <option value="7.50">Bet 7.50 BGN</option>
+        <option value="10.00">Bet 10.00 BGN</option>
+        <option value="12.50">Bet 12.50 BGN</option>
+        <option value="15.00">Bet 15.00 BGN</option>
+        <option value="20.00">Bet 20.00 BGN</option>
+        <option value="25.00">Bet 25.00 BGN</option>
+        <option value="50.00">Bet 50.00 BGN</option>
+        <option value="100.00">Bet 100.00 BGN</option>
+        <option value="200.00">Bet 200.00 BGN</option>
+        <option value="250.00">Bet 250.00 BGN</option>
+      </select>
+    </div>
+    <button onclick="spin()">Spin</button>
+    <label><span id="balance">100.00</span></label>
+  </div>
+
+
+  <div>
+    <label for="volumeControl">Music Volume:</label>
+    <input type="range" id="volumeControl" min="0" max="1" step="0.1" value="1">
+</div>
+
+
+  <script>
+    var audio = document.getElementById("backgroundMusic");
+    var volumeInput = document.getElementById("volumeControl");
+
+    volumeInput.addEventListener("input", function() {
+        audio.volume = volumeInput.value;
+    });
+    audio.volume = volumeInput.value;
+
+
+
+    let balance = 100.00;
+    let winAmount = 0.00;
+    let currentBet = 0.10; // Set a default value for currentBet
+  
+    const symbols = ['bell.png', 'cherry.png', 'grape.png', 'lemon.png', 'orange.png', 'plum.png', 'seven.png', 'watermelon.png', 'wild.png', 'unlucky1.png', 'unlucky2.png', 'unlucky3.png'];
+  
+    function getRandomSymbol() {
+      const randomIndex = Math.floor(Math.random() * symbols.length);
+      return symbols[randomIndex];
+    }
+  
+    function updateBet() {
+      const betAmount = document.getElementById('betAmount').value;
+      currentBet = parseFloat(betAmount);
+      // Update the placeholder element with the current bet
+      document.getElementById('currentBet').textContent = `${currentBet.toFixed(2)} BGN`;
+    }
+  
+    async function spin() {
+      const reels = document.querySelectorAll('.reel');
+      const winAmountElement = document.getElementById('win-amount');
+      const balanceElement = document.getElementById('balance');
+      const currentBetElement = document.getElementById('currentBet'); // Added for displaying current bet
+      backgroundMusic.play();
+      spinSound.play();
+
+      if (balance < currentBet) {
+        console.log('Insufficient balance. Please lower your bet.');
+        return;
+      }
+  async function spinReel(reel, reelNumber) {
+    return new Promise(async (resolve) => {
+      reel.innerHTML = '';
+      for (let i = 0; i < 4; i++) {
+        const symbol = getRandomSymbol();
+        const offset = i * 25;
+
+        const symbolElement = document.createElement('div');
+        symbolElement.className = 'symbol';
+        symbolElement.id = `symbol_${reelNumber}_${i}`;
+        symbolElement.style.top = `${offset}%`;
+        symbolElement.style.width = '100%';
+        symbolElement.style.height = '25%';
+        symbolElement.style.position = 'absolute';
+
+        const symbolImage = document.createElement('img');
+        symbolImage.src = `images/${symbol}`;
+        symbolImage.alt = symbol;
+        symbolImage.style.width = '100%';
+        symbolImage.style.height = '100%';
+        symbolImage.style.objectFit = 'contain';
+
+        symbolElement.appendChild(symbolImage);
+        reel.appendChild(symbolElement);
+      }
+
+      resolve();
+    });
+  }
+
+  async function startSpin() {
+    let stopPromises = [];
+    for (let i = 0; i < reels.length; i++) {
+      const stopPromise = new Promise((resolve) => {
+        setTimeout(() => {
+          document.querySelectorAll(`#reel${i + 1} .symbol`).forEach(symbol => symbol.classList.add('stopped'));
+          resolve();
+        }, 500);
+      });
+      stopPromises.push(stopPromise);
+      await spinReel(reels[i], i + 1);
+    }
+    await Promise.all(stopPromises);
+
+    const symbol_1_0 = document.getElementById('symbol_1_0').querySelector('img').src;
+    const symbol_2_0 = document.getElementById('symbol_2_0').querySelector('img').src;
+    const symbol_3_0 = document.getElementById('symbol_3_0').querySelector('img').src;
+    const symbol_4_0 = document.getElementById('symbol_4_0').querySelector('img').src;
+    const symbol_5_0 = document.getElementById('symbol_5_0').querySelector('img').src;
+    const symbol_1_1 = document.getElementById('symbol_1_1').querySelector('img').src;
+    const symbol_2_1 = document.getElementById('symbol_2_1').querySelector('img').src;
+    const symbol_3_1 = document.getElementById('symbol_3_1').querySelector('img').src;
+    const symbol_4_1 = document.getElementById('symbol_4_1').querySelector('img').src;
+    const symbol_5_1 = document.getElementById('symbol_5_1').querySelector('img').src;
+    const symbol_1_2 = document.getElementById('symbol_1_2').querySelector('img').src;
+    const symbol_2_2 = document.getElementById('symbol_2_2').querySelector('img').src;
+    const symbol_3_2 = document.getElementById('symbol_3_2').querySelector('img').src;
+    const symbol_4_2 = document.getElementById('symbol_4_2').querySelector('img').src;
+    const symbol_5_2 = document.getElementById('symbol_5_2').querySelector('img').src;
+    const symbol_1_3 = document.getElementById('symbol_1_3').querySelector('img').src;
+    const symbol_2_3 = document.getElementById('symbol_2_3').querySelector('img').src;
+    const symbol_3_3 = document.getElementById('symbol_3_3').querySelector('img').src;
+    const symbol_4_3 = document.getElementById('symbol_4_3').querySelector('img').src;
+    const symbol_5_3 = document.getElementById('symbol_5_3').querySelector('img').src;
+
+    if (symbol_1_0.includes('bell.png') && symbol_2_0.includes('bell.png') && symbol_3_0.includes('bell.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('bell.png') && symbol_2_0.includes('bell.png') && symbol_3_0.includes('bell.png') && symbol_4_0.includes('bell.png')) {
+      winAmount += currentBet * 10;
+      winAmount += currentBet * 10;
+      win.play()
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('bell.png') && symbol_2_0.includes('bell.png') && symbol_3_0.includes('bell.png') && symbol_4_0.includes('bell.png') && symbol_5_0.includes('bell.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_1.includes('bell.png') && symbol_2_1.includes('bell.png') && symbol_3_1.includes('bell.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_1.includes('bell.png') && symbol_2_1.includes('bell.png') && symbol_3_1.includes('bell.png') && symbol_4_1.includes('bell.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_1.includes('bell.png') && symbol_2_1.includes('bell.png') && symbol_3_1.includes('bell.png') && symbol_4_1.includes('bell.png') && symbol_5_1.includes('bell.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_2.includes('bell.png') && symbol_2_2.includes('bell.png') && symbol_3_2.includes('bell.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_2.includes('bell.png') && symbol_2_2.includes('bell.png') && symbol_3_2.includes('bell.png') && symbol_4_2.includes('bell.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_2.includes('bell.png') && symbol_2_2.includes('bell.png') && symbol_3_2.includes('bell.png') && symbol_4_2.includes('bell.png') && symbol_5_2.includes('bell.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('bell.png') && symbol_2_3.includes('bell.png') && symbol_3_3.includes('bell.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('bell.png') && symbol_2_3.includes('bell.png') && symbol_3_3.includes('bell.png') && symbol_4_3.includes('bell.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('bell.png') && symbol_2_3.includes('bell.png') && symbol_3_3.includes('bell.png') && symbol_4_3.includes('bell.png') && symbol_5_3.includes('bell.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('bell.png') && symbol_2_3.includes('bell.png') && symbol_3_0.includes('bell.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('bell.png') && symbol_2_3.includes('bell.png') && symbol_3_0.includes('bell.png') && symbol_4_3.includes('bell.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('bell.png') && symbol_2_3.includes('bell.png') && symbol_3_0.includes('bell.png') && symbol_4_3.includes('bell.png') && symbol_5_0.includes('bell.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('bell.png') && symbol_2_0.includes('bell.png') && symbol_3_3.includes('bell.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('bell.png') && symbol_2_0.includes('bell.png') && symbol_3_3.includes('bell.png') && symbol_4_0.includes('bell.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('bell.png') && symbol_2_0.includes('bell.png') && symbol_3_3.includes('bell.png') && symbol_4_0.includes('bell.png') && symbol_5_3.includes('bell.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('bell.png') && symbol_2_2.includes('bell.png') && symbol_3_2.includes('bell.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('bell.png') && symbol_2_2.includes('bell.png') && symbol_3_2.includes('bell.png') && symbol_4_2.includes('bell.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('bell.png') && symbol_2_2.includes('bell.png') && symbol_3_2.includes('bell.png') && symbol_4_2.includes('bell.png') && symbol_5_3.includes('bell.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('bell.png') && symbol_2_1.includes('bell.png') && symbol_3_1.includes('bell.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('bell.png') && symbol_2_1.includes('bell.png') && symbol_3_1.includes('bell.png') && symbol_4_1.includes('bell.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('bell.png') && symbol_2_1.includes('bell.png') && symbol_3_1.includes('bell.png') && symbol_4_1.includes('bell.png') && symbol_5_0.includes('bell.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('bell.png') && symbol_2_2.includes('bell.png') && symbol_3_1.includes('bell.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('bell.png') && symbol_2_2.includes('bell.png') && symbol_3_1.includes('bell.png') && symbol_4_0.includes('bell.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('bell.png') && symbol_2_2.includes('bell.png') && symbol_3_1.includes('bell.png') && symbol_4_0.includes('bell.png') && symbol_5_0.includes('bell.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('bell.png') && symbol_2_1.includes('bell.png') && symbol_3_2.includes('bell.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('bell.png') && symbol_2_1.includes('bell.png') && symbol_3_2.includes('bell.png') && symbol_4_3.includes('bell.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('bell.png') && symbol_2_1.includes('bell.png') && symbol_3_2.includes('bell.png') && symbol_4_3.includes('bell.png') && symbol_5_3.includes('bell.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('cherry.png') && symbol_2_0.includes('cherry.png') && symbol_3_0.includes('cherry.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('cherry.png') && symbol_2_0.includes('cherry.png') && symbol_3_0.includes('cherry.png') && symbol_4_0.includes('cherry.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('cherry.png') && symbol_2_0.includes('cherry.png') && symbol_3_0.includes('cherry.png') && symbol_4_0.includes('cherry.png') && symbol_5_0.includes('cherry.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_1.includes('cherry.png') && symbol_2_1.includes('cherry.png') && symbol_3_1.includes('cherry.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_1.includes('cherry.png') && symbol_2_1.includes('cherry.png') && symbol_3_1.includes('cherry.png') && symbol_4_1.includes('cherry.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_1.includes('cherry.png') && symbol_2_1.includes('cherry.png') && symbol_3_1.includes('cherry.png') && symbol_4_1.includes('cherry.png') && symbol_5_1.includes('cherry.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_2.includes('cherry.png') && symbol_2_2.includes('cherry.png') && symbol_3_2.includes('cherry.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_2.includes('cherry.png') && symbol_2_2.includes('cherry.png') && symbol_3_2.includes('cherry.png') && symbol_4_2.includes('cherry.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_2.includes('cherry.png') && symbol_2_2.includes('cherry.png') && symbol_3_2.includes('cherry.png') && symbol_4_2.includes('cherry.png') && symbol_5_2.includes('cherry.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('cherry.png') && symbol_2_3.includes('cherry.png') && symbol_3_3.includes('cherry.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('cherry.png') && symbol_2_3.includes('cherry.png') && symbol_3_3.includes('cherry.png') && symbol_4_3.includes('cherry.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('cherry.png') && symbol_2_3.includes('cherry.png') && symbol_3_3.includes('cherry.png') && symbol_4_3.includes('cherry.png') && symbol_5_3.includes('cherry.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('cherry.png') && symbol_2_3.includes('cherry.png') && symbol_3_0.includes('cherry.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('cherry.png') && symbol_2_3.includes('cherry.png') && symbol_3_0.includes('cherry.png') && symbol_4_3.includes('cherry.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('cherry.png') && symbol_2_3.includes('cherry.png') && symbol_3_0.includes('cherry.png') && symbol_4_3.includes('cherry.png') && symbol_5_0.includes('cherry.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('cherry.png') && symbol_2_0.includes('cherry.png') && symbol_3_3.includes('cherry.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('cherry.png') && symbol_2_0.includes('cherry.png') && symbol_3_3.includes('cherry.png') && symbol_4_0.includes('cherry.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('cherry.png') && symbol_2_0.includes('cherry.png') && symbol_3_3.includes('cherry.png') && symbol_4_0.includes('cherry.png') && symbol_5_3.includes('cherry.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('cherry.png') && symbol_2_2.includes('cherry.png') && symbol_3_2.includes('cherry.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('cherry.png') && symbol_2_2.includes('cherry.png') && symbol_3_2.includes('cherry.png') && symbol_4_2.includes('cherry.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('cherry.png') && symbol_2_2.includes('cherry.png') && symbol_3_2.includes('cherry.png') && symbol_4_2.includes('cherry.png') && symbol_5_3.includes('cherry.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('cherry.png') && symbol_2_1.includes('cherry.png') && symbol_3_1.includes('cherry.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('cherry.png') && symbol_2_1.includes('cherry.png') && symbol_3_1.includes('cherry.png') && symbol_4_1.includes('cherry.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('cherry.png') && symbol_2_1.includes('cherry.png') && symbol_3_1.includes('cherry.png') && symbol_4_1.includes('cherry.png') && symbol_5_0.includes('cherry.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('cherry.png') && symbol_2_2.includes('cherry.png') && symbol_3_1.includes('cherry.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('cherry.png') && symbol_2_2.includes('cherry.png') && symbol_3_1.includes('cherry.png') && symbol_4_0.includes('cherry.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('cherry.png') && symbol_2_2.includes('cherry.png') && symbol_3_1.includes('cherry.png') && symbol_4_0.includes('cherry.png') && symbol_5_0.includes('cherry.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('cherry.png') && symbol_2_1.includes('cherry.png') && symbol_3_2.includes('cherry.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('cherry.png') && symbol_2_1.includes('cherry.png') && symbol_3_2.includes('cherry.png') && symbol_4_3.includes('cherry.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('cherry.png') && symbol_2_1.includes('cherry.png') && symbol_3_2.includes('cherry.png') && symbol_4_3.includes('cherry.png') && symbol_5_3.includes('cherry.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('grape.png') && symbol_2_0.includes('grape.png') && symbol_3_0.includes('grape.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('grape.png') && symbol_2_0.includes('grape.png') && symbol_3_0.includes('grape.png') && symbol_4_0.includes('grape.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('grape.png') && symbol_2_0.includes('grape.png') && symbol_3_0.includes('grape.png') && symbol_4_0.includes('grape.png') && symbol_5_0.includes('grape.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_1.includes('grape.png') && symbol_2_1.includes('grape.png') && symbol_3_1.includes('grape.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_1.includes('grape.png') && symbol_2_1.includes('grape.png') && symbol_3_1.includes('grape.png') && symbol_4_1.includes('grape.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_1.includes('grape.png') && symbol_2_1.includes('grape.png') && symbol_3_1.includes('grape.png') && symbol_4_1.includes('grape.png') && symbol_5_1.includes('grape.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_2.includes('grape.png') && symbol_2_2.includes('grape.png') && symbol_3_2.includes('grape.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_2.includes('grape.png') && symbol_2_2.includes('grape.png') && symbol_3_2.includes('grape.png') && symbol_4_2.includes('grape.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_2.includes('grape.png') && symbol_2_2.includes('grape.png') && symbol_3_2.includes('grape.png') && symbol_4_2.includes('grape.png') && symbol_5_2.includes('grape.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('grape.png') && symbol_2_3.includes('grape.png') && symbol_3_3.includes('grape.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('grape.png') && symbol_2_3.includes('grape.png') && symbol_3_3.includes('grape.png') && symbol_4_3.includes('grape.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('grape.png') && symbol_2_3.includes('grape.png') && symbol_3_3.includes('grape.png') && symbol_4_3.includes('grape.png') && symbol_5_3.includes('grape.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('grape.png') && symbol_2_3.includes('grape.png') && symbol_3_0.includes('grape.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('grape.png') && symbol_2_3.includes('grape.png') && symbol_3_0.includes('grape.png') && symbol_4_3.includes('grape.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('grape.png') && symbol_2_3.includes('grape.png') && symbol_3_0.includes('grape.png') && symbol_4_3.includes('grape.png') && symbol_5_0.includes('grape.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('grape.png') && symbol_2_0.includes('grape.png') && symbol_3_3.includes('grape.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('grape.png') && symbol_2_0.includes('grape.png') && symbol_3_3.includes('grape.png') && symbol_4_0.includes('grape.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('grape.png') && symbol_2_0.includes('grape.png') && symbol_3_3.includes('grape.png') && symbol_4_0.includes('grape.png') && symbol_5_3.includes('grape.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('grape.png') && symbol_2_2.includes('grape.png') && symbol_3_2.includes('grape.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('grape.png') && symbol_2_2.includes('grape.png') && symbol_3_2.includes('grape.png') && symbol_4_2.includes('grape.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('grape.png') && symbol_2_2.includes('grape.png') && symbol_3_2.includes('grape.png') && symbol_4_2.includes('grape.png') && symbol_5_3.includes('grape.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('grape.png') && symbol_2_1.includes('grape.png') && symbol_3_1.includes('grape.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('grape.png') && symbol_2_1.includes('grape.png') && symbol_3_1.includes('grape.png') && symbol_4_1.includes('grape.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('grape.png') && symbol_2_1.includes('grape.png') && symbol_3_1.includes('grape.png') && symbol_4_1.includes('grape.png') && symbol_5_0.includes('grape.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('grape.png') && symbol_2_2.includes('grape.png') && symbol_3_1.includes('grape.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('grape.png') && symbol_2_2.includes('grape.png') && symbol_3_1.includes('grape.png') && symbol_4_0.includes('grape.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('grape.png') && symbol_2_2.includes('grape.png') && symbol_3_1.includes('grape.png') && symbol_4_0.includes('grape.png') && symbol_5_0.includes('grape.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('grape.png') && symbol_2_1.includes('grape.png') && symbol_3_2.includes('grape.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('grape.png') && symbol_2_1.includes('grape.png') && symbol_3_2.includes('grape.png') && symbol_4_3.includes('grape.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('grape.png') && symbol_2_1.includes('grape.png') && symbol_3_2.includes('grape.png') && symbol_4_3.includes('grape.png') && symbol_5_3.includes('grape.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('lemon.png') && symbol_2_0.includes('lemon.png') && symbol_3_0.includes('lemon.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('lemon.png') && symbol_2_0.includes('lemon.png') && symbol_3_0.includes('lemon.png') && symbol_4_0.includes('lemon.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('lemon.png') && symbol_2_0.includes('lemon.png') && symbol_3_0.includes('lemon.png') && symbol_4_0.includes('lemon.png') && symbol_5_0.includes('lemon.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_1.includes('lemon.png') && symbol_2_1.includes('lemon.png') && symbol_3_1.includes('lemon.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_1.includes('lemon.png') && symbol_2_1.includes('lemon.png') && symbol_3_1.includes('lemon.png') && symbol_4_1.includes('lemon.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_1.includes('lemon.png') && symbol_2_1.includes('lemon.png') && symbol_3_1.includes('lemon.png') && symbol_4_1.includes('lemon.png') && symbol_5_1.includes('lemon.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_2.includes('lemon.png') && symbol_2_2.includes('lemon.png') && symbol_3_2.includes('lemon.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_2.includes('lemon.png') && symbol_2_2.includes('lemon.png') && symbol_3_2.includes('lemon.png') && symbol_4_2.includes('lemon.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_2.includes('lemon.png') && symbol_2_2.includes('lemon.png') && symbol_3_2.includes('lemon.png') && symbol_4_2.includes('lemon.png') && symbol_5_2.includes('lemon.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('lemon.png') && symbol_2_3.includes('lemon.png') && symbol_3_3.includes('lemon.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('lemon.png') && symbol_2_3.includes('lemon.png') && symbol_3_3.includes('lemon.png') && symbol_4_3.includes('lemon.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('lemon.png') && symbol_2_3.includes('lemon.png') && symbol_3_3.includes('lemon.png') && symbol_4_3.includes('lemon.png') && symbol_5_3.includes('lemon.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('lemon.png') && symbol_2_3.includes('lemon.png') && symbol_3_0.includes('lemon.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('lemon.png') && symbol_2_3.includes('lemon.png') && symbol_3_0.includes('lemon.png') && symbol_4_3.includes('lemon.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('lemon.png') && symbol_2_3.includes('lemon.png') && symbol_3_0.includes('lemon.png') && symbol_4_3.includes('lemon.png') && symbol_5_0.includes('lemon.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('lemon.png') && symbol_2_0.includes('lemon.png') && symbol_3_3.includes('lemon.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('lemon.png') && symbol_2_0.includes('lemon.png') && symbol_3_3.includes('lemon.png') && symbol_4_0.includes('lemon.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('lemon.png') && symbol_2_0.includes('lemon.png') && symbol_3_3.includes('lemon.png') && symbol_4_0.includes('lemon.png') && symbol_5_3.includes('lemon.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('lemon.png') && symbol_2_2.includes('lemon.png') && symbol_3_2.includes('lemon.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('lemon.png') && symbol_2_2.includes('lemon.png') && symbol_3_2.includes('lemon.png') && symbol_4_2.includes('lemon.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('lemon.png') && symbol_2_2.includes('lemon.png') && symbol_3_2.includes('lemon.png') && symbol_4_2.includes('lemon.png') && symbol_5_3.includes('lemon.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('lemon.png') && symbol_2_1.includes('lemon.png') && symbol_3_1.includes('lemon.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('lemon.png') && symbol_2_1.includes('lemon.png') && symbol_3_1.includes('lemon.png') && symbol_4_1.includes('lemon.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('lemon.png') && symbol_2_1.includes('lemon.png') && symbol_3_1.includes('lemon.png') && symbol_4_1.includes('lemon.png') && symbol_5_0.includes('lemon.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('lemon.png') && symbol_2_2.includes('lemon.png') && symbol_3_1.includes('lemon.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('lemon.png') && symbol_2_2.includes('lemon.png') && symbol_3_1.includes('lemon.png') && symbol_4_0.includes('lemon.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('lemon.png') && symbol_2_2.includes('lemon.png') && symbol_3_1.includes('lemon.png') && symbol_4_0.includes('lemon.png') && symbol_5_0.includes('lemon.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('lemon.png') && symbol_2_1.includes('lemon.png') && symbol_3_2.includes('lemon.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('lemon.png') && symbol_2_1.includes('lemon.png') && symbol_3_2.includes('lemon.png') && symbol_4_3.includes('lemon.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('lemon.png') && symbol_2_1.includes('lemon.png') && symbol_3_2.includes('lemon.png') && symbol_4_3.includes('lemon.png') && symbol_5_3.includes('lemon.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('orange.png') && symbol_2_0.includes('orange.png') && symbol_3_0.includes('orange.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('orange.png') && symbol_2_0.includes('orange.png') && symbol_3_0.includes('orange.png') && symbol_4_0.includes('orange.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('orange.png') && symbol_2_0.includes('orange.png') && symbol_3_0.includes('orange.png') && symbol_4_0.includes('orange.png') && symbol_5_0.includes('orange.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_1.includes('orange.png') && symbol_2_1.includes('orange.png') && symbol_3_1.includes('orange.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_1.includes('orange.png') && symbol_2_1.includes('orange.png') && symbol_3_1.includes('orange.png') && symbol_4_1.includes('orange.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_1.includes('orange.png') && symbol_2_1.includes('orange.png') && symbol_3_1.includes('orange.png') && symbol_4_1.includes('orange.png') && symbol_5_1.includes('orange.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_2.includes('orange.png') && symbol_2_2.includes('orange.png') && symbol_3_2.includes('orange.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_2.includes('orange.png') && symbol_2_2.includes('orange.png') && symbol_3_2.includes('orange.png') && symbol_4_2.includes('orange.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_2.includes('orange.png') && symbol_2_2.includes('orange.png') && symbol_3_2.includes('orange.png') && symbol_4_2.includes('orange.png') && symbol_5_2.includes('orange.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('orange.png') && symbol_2_3.includes('orange.png') && symbol_3_3.includes('orange.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('orange.png') && symbol_2_3.includes('orange.png') && symbol_3_3.includes('orange.png') && symbol_4_3.includes('orange.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('orange.png') && symbol_2_3.includes('orange.png') && symbol_3_3.includes('orange.png') && symbol_4_3.includes('orange.png') && symbol_5_3.includes('orange.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('orange.png') && symbol_2_3.includes('orange.png') && symbol_3_0.includes('orange.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('orange.png') && symbol_2_3.includes('orange.png') && symbol_3_0.includes('orange.png') && symbol_4_3.includes('orange.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('orange.png') && symbol_2_3.includes('orange.png') && symbol_3_0.includes('orange.png') && symbol_4_3.includes('orange.png') && symbol_5_0.includes('orange.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('orange.png') && symbol_2_0.includes('orange.png') && symbol_3_3.includes('orange.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('orange.png') && symbol_2_0.includes('orange.png') && symbol_3_3.includes('orange.png') && symbol_4_0.includes('orange.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('orange.png') && symbol_2_0.includes('orange.png') && symbol_3_3.includes('orange.png') && symbol_4_0.includes('orange.png') && symbol_5_3.includes('orange.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('orange.png') && symbol_2_2.includes('orange.png') && symbol_3_2.includes('orange.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('orange.png') && symbol_2_2.includes('orange.png') && symbol_3_2.includes('orange.png') && symbol_4_2.includes('orange.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('orange.png') && symbol_2_2.includes('orange.png') && symbol_3_2.includes('orange.png') && symbol_4_2.includes('orange.png') && symbol_5_3.includes('orange.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('orange.png') && symbol_2_1.includes('orange.png') && symbol_3_1.includes('orange.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('orange.png') && symbol_2_1.includes('orange.png') && symbol_3_1.includes('orange.png') && symbol_4_1.includes('orange.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('orange.png') && symbol_2_1.includes('orange.png') && symbol_3_1.includes('orange.png') && symbol_4_1.includes('orange.png') && symbol_5_0.includes('orange.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('orange.png') && symbol_2_2.includes('orange.png') && symbol_3_1.includes('orange.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('orange.png') && symbol_2_2.includes('orange.png') && symbol_3_1.includes('orange.png') && symbol_4_0.includes('orange.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('orange.png') && symbol_2_2.includes('orange.png') && symbol_3_1.includes('orange.png') && symbol_4_0.includes('orange.png') && symbol_5_0.includes('orange.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('orange.png') && symbol_2_1.includes('orange.png') && symbol_3_2.includes('orange.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('orange.png') && symbol_2_1.includes('orange.png') && symbol_3_2.includes('orange.png') && symbol_4_3.includes('orange.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('orange.png') && symbol_2_1.includes('orange.png') && symbol_3_2.includes('orange.png') && symbol_4_3.includes('orange.png') && symbol_5_3.includes('orange.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('plum.png') && symbol_2_0.includes('plum.png') && symbol_3_0.includes('plum.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('plum.png') && symbol_2_0.includes('plum.png') && symbol_3_0.includes('plum.png') && symbol_4_0.includes('plum.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('plum.png') && symbol_2_0.includes('plum.png') && symbol_3_0.includes('plum.png') && symbol_4_0.includes('plum.png') && symbol_5_0.includes('plum.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_1.includes('plum.png') && symbol_2_1.includes('plum.png') && symbol_3_1.includes('plum.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_1.includes('plum.png') && symbol_2_1.includes('plum.png') && symbol_3_1.includes('plum.png') && symbol_4_1.includes('plum.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_1.includes('plum.png') && symbol_2_1.includes('plum.png') && symbol_3_1.includes('plum.png') && symbol_4_1.includes('plum.png') && symbol_5_1.includes('plum.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_2.includes('plum.png') && symbol_2_2.includes('plum.png') && symbol_3_2.includes('plum.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_2.includes('plum.png') && symbol_2_2.includes('plum.png') && symbol_3_2.includes('plum.png') && symbol_4_2.includes('plum.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_2.includes('plum.png') && symbol_2_2.includes('plum.png') && symbol_3_2.includes('plum.png') && symbol_4_2.includes('plum.png') && symbol_5_2.includes('plum.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('plum.png') && symbol_2_3.includes('plum.png') && symbol_3_3.includes('plum.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('plum.png') && symbol_2_3.includes('plum.png') && symbol_3_3.includes('plum.png') && symbol_4_3.includes('plum.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('plum.png') && symbol_2_3.includes('plum.png') && symbol_3_3.includes('plum.png') && symbol_4_3.includes('plum.png') && symbol_5_3.includes('plum.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('plum.png') && symbol_2_3.includes('plum.png') && symbol_3_0.includes('plum.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('plum.png') && symbol_2_3.includes('plum.png') && symbol_3_0.includes('plum.png') && symbol_4_3.includes('plum.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('plum.png') && symbol_2_3.includes('plum.png') && symbol_3_0.includes('plum.png') && symbol_4_3.includes('plum.png') && symbol_5_0.includes('plum.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('plum.png') && symbol_2_0.includes('plum.png') && symbol_3_3.includes('plum.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('plum.png') && symbol_2_0.includes('plum.png') && symbol_3_3.includes('plum.png') && symbol_4_0.includes('plum.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('plum.png') && symbol_2_0.includes('plum.png') && symbol_3_3.includes('plum.png') && symbol_4_0.includes('plum.png') && symbol_5_3.includes('plum.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('plum.png') && symbol_2_2.includes('plum.png') && symbol_3_2.includes('plum.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('plum.png') && symbol_2_2.includes('plum.png') && symbol_3_2.includes('plum.png') && symbol_4_2.includes('plum.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('plum.png') && symbol_2_2.includes('plum.png') && symbol_3_2.includes('plum.png') && symbol_4_2.includes('plum.png') && symbol_5_3.includes('plum.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('plum.png') && symbol_2_1.includes('plum.png') && symbol_3_1.includes('plum.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('plum.png') && symbol_2_1.includes('plum.png') && symbol_3_1.includes('plum.png') && symbol_4_1.includes('plum.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('plum.png') && symbol_2_1.includes('plum.png') && symbol_3_1.includes('plum.png') && symbol_4_1.includes('plum.png') && symbol_5_0.includes('plum.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('plum.png') && symbol_2_2.includes('plum.png') && symbol_3_1.includes('plum.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('plum.png') && symbol_2_2.includes('plum.png') && symbol_3_1.includes('plum.png') && symbol_4_0.includes('plum.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('plum.png') && symbol_2_2.includes('plum.png') && symbol_3_1.includes('plum.png') && symbol_4_0.includes('plum.png') && symbol_5_0.includes('plum.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('plum.png') && symbol_2_1.includes('plum.png') && symbol_3_2.includes('plum.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('plum.png') && symbol_2_1.includes('plum.png') && symbol_3_2.includes('plum.png') && symbol_4_3.includes('plum.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('plum.png') && symbol_2_1.includes('plum.png') && symbol_3_2.includes('plum.png') && symbol_4_3.includes('plum.png') && symbol_5_3.includes('plum.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+
+
+
+    if (symbol_1_0.includes('watermelon.png') && symbol_2_0.includes('watermelon.png') && symbol_3_0.includes('watermelon.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('watermelon.png') && symbol_2_0.includes('watermelon.png') && symbol_3_0.includes('watermelon.png') && symbol_4_0.includes('watermelon.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('watermelon.png') && symbol_2_0.includes('watermelon.png') && symbol_3_0.includes('watermelon.png') && symbol_4_0.includes('watermelon.png') && symbol_5_0.includes('watermelon.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_1.includes('watermelon.png') && symbol_2_1.includes('watermelon.png') && symbol_3_1.includes('watermelon.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_1.includes('watermelon.png') && symbol_2_1.includes('watermelon.png') && symbol_3_1.includes('watermelon.png') && symbol_4_1.includes('watermelon.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_1.includes('watermelon.png') && symbol_2_1.includes('watermelon.png') && symbol_3_1.includes('watermelon.png') && symbol_4_1.includes('watermelon.png') && symbol_5_1.includes('watermelon.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_2.includes('watermelon.png') && symbol_2_2.includes('watermelon.png') && symbol_3_2.includes('watermelon.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_2.includes('watermelon.png') && symbol_2_2.includes('watermelon.png') && symbol_3_2.includes('watermelon.png') && symbol_4_2.includes('watermelon.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_2.includes('watermelon.png') && symbol_2_2.includes('watermelon.png') && symbol_3_2.includes('watermelon.png') && symbol_4_2.includes('watermelon.png') && symbol_5_2.includes('watermelon.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('watermelon.png') && symbol_2_3.includes('watermelon.png') && symbol_3_3.includes('watermelon.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('watermelon.png') && symbol_2_3.includes('watermelon.png') && symbol_3_3.includes('watermelon.png') && symbol_4_3.includes('watermelon.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('watermelon.png') && symbol_2_3.includes('watermelon.png') && symbol_3_3.includes('watermelon.png') && symbol_4_3.includes('watermelon.png') && symbol_5_3.includes('watermelon.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('watermelon.png') && symbol_2_3.includes('watermelon.png') && symbol_3_0.includes('watermelon.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('watermelon.png') && symbol_2_3.includes('watermelon.png') && symbol_3_0.includes('watermelon.png') && symbol_4_3.includes('watermelon.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('watermelon.png') && symbol_2_3.includes('watermelon.png') && symbol_3_0.includes('watermelon.png') && symbol_4_3.includes('watermelon.png') && symbol_5_0.includes('watermelon.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('watermelon.png') && symbol_2_0.includes('watermelon.png') && symbol_3_3.includes('watermelon.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('watermelon.png') && symbol_2_0.includes('watermelon.png') && symbol_3_3.includes('watermelon.png') && symbol_4_0.includes('watermelon.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('watermelon.png') && symbol_2_0.includes('watermelon.png') && symbol_3_3.includes('watermelon.png') && symbol_4_0.includes('watermelon.png') && symbol_5_3.includes('watermelon.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('watermelon.png') && symbol_2_2.includes('watermelon.png') && symbol_3_2.includes('watermelon.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('watermelon.png') && symbol_2_2.includes('watermelon.png') && symbol_3_2.includes('watermelon.png') && symbol_4_2.includes('watermelon.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('watermelon.png') && symbol_2_2.includes('watermelon.png') && symbol_3_2.includes('watermelon.png') && symbol_4_2.includes('watermelon.png') && symbol_5_3.includes('watermelon.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('watermelon.png') && symbol_2_1.includes('watermelon.png') && symbol_3_1.includes('watermelon.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('watermelon.png') && symbol_2_1.includes('watermelon.png') && symbol_3_1.includes('watermelon.png') && symbol_4_1.includes('watermelon.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('watermelon.png') && symbol_2_1.includes('watermelon.png') && symbol_3_1.includes('watermelon.png') && symbol_4_1.includes('watermelon.png') && symbol_5_0.includes('watermelon.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('watermelon.png') && symbol_2_2.includes('watermelon.png') && symbol_3_1.includes('watermelon.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('watermelon.png') && symbol_2_2.includes('watermelon.png') && symbol_3_1.includes('watermelon.png') && symbol_4_0.includes('watermelon.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('watermelon.png') && symbol_2_2.includes('watermelon.png') && symbol_3_1.includes('watermelon.png') && symbol_4_0.includes('watermelon.png') && symbol_5_0.includes('watermelon.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('watermelon.png') && symbol_2_1.includes('watermelon.png') && symbol_3_2.includes('watermelon.png')) {
+      winAmount += currentBet * 5;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('watermelon.png') && symbol_2_1.includes('watermelon.png') && symbol_3_2.includes('watermelon.png') && symbol_4_3.includes('watermelon.png')) {
+      winAmount += currentBet * 10;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('watermelon.png') && symbol_2_1.includes('watermelon.png') && symbol_3_2.includes('watermelon.png') && symbol_4_3.includes('watermelon.png') && symbol_5_3.includes('watermelon.png')) {
+      winAmount += currentBet * 20;
+       win.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('wild.png') && symbol_2_0.includes('wild.png') && symbol_3_0.includes('wild.png')) {
+      winAmount += currentBet * 10;
+       bigwin.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('wild.png') && symbol_2_0.includes('wild.png') && symbol_3_0.includes('wild.png') && symbol_4_0.includes('wild.png')) {
+      winAmount += currentBet * 20;
+      bigwin.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('wild.png') && symbol_2_0.includes('wild.png') && symbol_3_0.includes('wild.png') && symbol_4_0.includes('wild.png') && symbol_5_0.includes('wild.png')) {
+      winAmount += currentBet * 50;
+      bigwin.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_1.includes('wild.png') && symbol_2_1.includes('wild.png') && symbol_3_1.includes('wild.png')) {
+      winAmount += currentBet * 10;
+      bigwin.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_1.includes('wild.png') && symbol_2_1.includes('wild.png') && symbol_3_1.includes('wild.png') && symbol_4_1.includes('wild.png')) {
+      winAmount += currentBet * 20;
+      bigwin.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_1.includes('wild.png') && symbol_2_1.includes('wild.png') && symbol_3_1.includes('wild.png') && symbol_4_1.includes('wild.png') && symbol_5_1.includes('wild.png')) {
+      winAmount += currentBet * 50;
+      bigwin.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_2.includes('wild.png') && symbol_2_2.includes('wild.png') && symbol_3_2.includes('wild.png')) {
+      winAmount += currentBet * 10;
+      bigwin.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_2.includes('wild.png') && symbol_2_2.includes('wild.png') && symbol_3_2.includes('wild.png') && symbol_4_2.includes('wild.png')) {
+      winAmount += currentBet * 20;
+      bigwin.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_2.includes('wild.png') && symbol_2_2.includes('wild.png') && symbol_3_2.includes('wild.png') && symbol_4_2.includes('wild.png') && symbol_5_2.includes('wild.png')) {
+      winAmount += currentBet * 50;
+      bigwin.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('wild.png') && symbol_2_3.includes('wild.png') && symbol_3_3.includes('wild.png')) {
+      winAmount += currentBet * 10;
+      bigwin.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('wild.png') && symbol_2_3.includes('wild.png') && symbol_3_3.includes('wild.png') && symbol_4_3.includes('wild.png')) {
+      winAmount += currentBet * 20;
+      bigwin.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('wild.png') && symbol_2_3.includes('wild.png') && symbol_3_3.includes('wild.png') && symbol_4_3.includes('wild.png') && symbol_5_3.includes('wild.png')) {
+      winAmount += currentBet * 50;
+      bigwin.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('wild.png') && symbol_2_3.includes('wild.png') && symbol_3_0.includes('wild.png')) {
+      winAmount += currentBet * 10;
+      bigwin.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('wild.png') && symbol_2_3.includes('wild.png') && symbol_3_0.includes('wild.png') && symbol_4_3.includes('wild.png')) {
+      winAmount += currentBet * 20;
+      bigwin.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('wild.png') && symbol_2_3.includes('wild.png') && symbol_3_0.includes('wild.png') && symbol_4_3.includes('wild.png') && symbol_5_0.includes('wild.png')) {
+      winAmount += currentBet * 50;
+      bigwin.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('wild.png') && symbol_2_0.includes('wild.png') && symbol_3_3.includes('wild.png')) {
+      winAmount += currentBet * 10;
+      bigwin.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('wild.png') && symbol_2_0.includes('wild.png') && symbol_3_3.includes('wild.png') && symbol_4_0.includes('wild.png')) {
+      winAmount += currentBet * 20;
+      bigwin.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('wild.png') && symbol_2_0.includes('wild.png') && symbol_3_3.includes('wild.png') && symbol_4_0.includes('wild.png') && symbol_5_3.includes('wild.png')) {
+      winAmount += currentBet * 50;
+      bigwin.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('wild.png') && symbol_2_2.includes('wild.png') && symbol_3_2.includes('wild.png')) {
+      winAmount += currentBet * 10;
+      bigwin.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('wild.png') && symbol_2_2.includes('wild.png') && symbol_3_2.includes('wild.png') && symbol_4_2.includes('wild.png')) {
+      winAmount += currentBet * 20;
+      bigwin.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('wild.png') && symbol_2_2.includes('wild.png') && symbol_3_2.includes('wild.png') && symbol_4_2.includes('wild.png') && symbol_5_3.includes('wild.png')) {
+      winAmount += currentBet * 50;
+      bigwin.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('wild.png') && symbol_2_1.includes('wild.png') && symbol_3_1.includes('wild.png')) {
+      winAmount += currentBet * 10;
+      bigwin.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('wild.png') && symbol_2_1.includes('wild.png') && symbol_3_1.includes('wild.png') && symbol_4_1.includes('wild.png')) {
+      winAmount += currentBet * 20;
+      bigwin.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('wild.png') && symbol_2_1.includes('wild.png') && symbol_3_1.includes('wild.png') && symbol_4_1.includes('wild.png') && symbol_5_0.includes('wild.png')) {
+      winAmount += currentBet * 50;
+      bigwin.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('wild.png') && symbol_2_2.includes('wild.png') && symbol_3_1.includes('wild.png')) {
+      winAmount += currentBet * 10;
+      bigwin.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('wild.png') && symbol_2_2.includes('wild.png') && symbol_3_1.includes('wild.png') && symbol_4_0.includes('wild.png')) {
+      winAmount += currentBet * 20;
+      bigwin.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_3.includes('wild.png') && symbol_2_2.includes('wild.png') && symbol_3_1.includes('wild.png') && symbol_4_0.includes('wild.png') && symbol_5_0.includes('wild.png')) {
+      winAmount += currentBet * 50;
+      bigwin.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('wild.png') && symbol_2_1.includes('wild.png') && symbol_3_2.includes('wild.png')) {
+      winAmount += currentBet * 10;
+      bigwin.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('wild.png') && symbol_2_1.includes('wild.png') && symbol_3_2.includes('wild.png') && symbol_4_3.includes('wild.png')) {
+      winAmount += currentBet * 20;
+      bigwin.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('wild.png') && symbol_2_1.includes('wild.png') && symbol_3_2.includes('wild.png') && symbol_4_3.includes('wild.png') && symbol_5_3.includes('wild.png')) {
+      winAmount += currentBet * 50;
+      bigwin.play();
+      winAmountElement.textContent = `${winAmount.toFixed(2)} BGN`; // Update winAmountElement
+      balance += winAmount;
+      winAmount = 0
+    }
+    if (symbol_1_0.includes('seven.png') && symbol_2_0.includes('seven.png') && symbol_3_0.includes('seven.png') && symbol_4_0.includes('seven.png') && symbol_5_0.includes('seven.png')) {
+bonus.play();
+
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+
+    }
+    if (symbol_1_1.includes('seven.png') && symbol_2_0.includes('seven.png') && symbol_3_0.includes('seven.png') && symbol_4_0.includes('seven.png') && symbol_5_1.includes('seven.png')) {
+bonus.play();
+
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+
+    }
+    if (symbol_1_1.includes('seven.png') && symbol_2_1.includes('seven.png') && symbol_3_1.includes('seven.png') && symbol_4_1.includes('seven.png') && symbol_5_1.includes('seven.png')) {
+bonus.play();
+
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+
+    }
+    if (symbol_1_2.includes('seven.png') && symbol_2_2.includes('seven.png') && symbol_3_2.includes('seven.png') && symbol_4_2.includes('seven.png') && symbol_5_2.includes('seven.png')) {
+bonus.play();
+
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+
+    }
+    if (symbol_1_3.includes('seven.png') && symbol_2_3.includes('seven.png') && symbol_3_3.includes('seven.png') && symbol_4_3.includes('seven.png') && symbol_5_3.includes('seven.png')) {
+bonus.play();
+
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+
+    }
+    if (symbol_1_2.includes('seven.png') && symbol_2_3.includes('seven.png') && symbol_3_3.includes('seven.png') && symbol_4_3.includes('seven.png') && symbol_5_2.includes('seven.png')) {
+bonus.play();
+
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+
+    }
+    if (symbol_1_2.includes('seven.png') && symbol_2_1.includes('seven.png') && symbol_3_2.includes('seven.png') && symbol_4_1.includes('seven.png') && symbol_5_2.includes('seven.png')) {
+bonus.play();
+
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+
+    }
+    if (symbol_1_1.includes('seven.png') && symbol_2_2.includes('seven.png') && symbol_3_1.includes('seven.png') && symbol_4_2.includes('seven.png') && symbol_5_1.includes('seven.png')) {
+bonus.play();
+
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+
+    }
+    if (symbol_1_0.includes('seven.png') && symbol_2_3.includes('seven.png') && symbol_3_0.includes('seven.png') && symbol_4_3.includes('seven.png') && symbol_5_0.includes('seven.png')) {
+bonus.play();
+
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+
+    }
+    if (symbol_1_3.includes('seven.png') && symbol_2_0.includes('seven.png') && symbol_3_3.includes('seven.png') && symbol_4_0.includes('seven.png') && symbol_5_3.includes('seven.png')) {
+bonus.play();
+
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+
+    }
+    if (symbol_1_3.includes('seven.png') && symbol_2_2.includes('seven.png') && symbol_3_2.includes('seven.png') && symbol_4_2.includes('seven.png') && symbol_5_3.includes('seven.png')) {
+bonus.play();
+
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+
+    }
+    if (symbol_1_0.includes('seven.png') && symbol_2_1.includes('seven.png') && symbol_3_1.includes('seven.png') && symbol_4_1.includes('seven.png') && symbol_5_0.includes('seven.png')) {
+bonus.play();
+
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+
+    }
+    if (symbol_1_3.includes('seven.png') && symbol_2_2.includes('seven.png') && symbol_3_1.includes('seven.png') && symbol_4_0.includes('seven.png') && symbol_5_0.includes('seven.png')) {
+bonus.play();
+
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+
+    }
+    if (symbol_1_0.includes('seven.png') && symbol_2_1.includes('seven.png') && symbol_3_2.includes('seven.png') && symbol_4_3.includes('seven.png') && symbol_5_3.includes('seven.png')) {
+bonus.play();
+
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+setTimeout(function() {
+  startSpin()
+}, 3000);
+
+    } 
+  }
+
+  function removeSpinButton() {
+        // Get the button element
+        var spinButton = document.getElementById('spinButton');
+
+        // Check if the button exists before trying to remove it
+        if (spinButton) {
+            // Remove the button
+            spinButton.remove();
+        }
+    }
+
+    function addSpinButton() {
+        // Create a new button element
+        var newButton = document.createElement('button');
+        newButton.textContent = 'Spin';
+        newButton.onclick = spin; // Assign the click event handler
+
+        // Append the new button to the body or any other desired location
+        document.body.appendChild(newButton);
+    }
+
+  balance -= currentBet;
+    balanceElement.textContent = balance.toFixed(2);
+    startSpin();
+  }
+</script>
